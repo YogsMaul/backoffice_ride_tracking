@@ -30,41 +30,51 @@ export default function Users() {
     : users;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium text-blue-700 dark:text-blue-400">People</p>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">User Management</h1>
-        <p className="text-gray-600 dark:text-slate-400 text-sm mt-1">Browse registered riders and their ride activity</p>
-      </div>
+    <div className="space-y-5">
+      <header className="flex flex-col gap-2 border-b border-line pb-5">
+        <p className="ops-eyebrow text-[10px] text-moss">People</p>
+        <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          User Management
+        </h1>
+        <p className="text-sm text-muted">Browse registered riders and their ride activity.</p>
+      </header>
 
-      <div className="glass-surface rounded-2xl shadow-[0_16px_40px_-24px_rgba(15,23,42,0.25)] dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)] overflow-hidden card-lift">
-        <div className="p-4 sm:p-5 border-b border-gray-200/80 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+      <section className="overflow-hidden rounded-xl border border-line bg-card">
+        <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div className="relative flex-1 sm:max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-slate-400" aria-hidden="true" />
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted"
+              aria-hidden="true"
+            />
             <input
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search users by name or email"
               aria-label="Search users by name or email"
-              className="w-full pl-10 pr-4 py-2 bg-white/80 dark:bg-slate-800 border border-gray-300 dark:border-slate-500 rounded-lg text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900"
+              className="w-full rounded-lg border border-line bg-paper py-2 pl-10 pr-4 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-moss"
             />
           </div>
-          <span className="text-sm text-gray-600 dark:text-slate-400">
+          <span className="ops-figures font-mono text-xs text-muted">
             {filtered.length} of {users.length} users
           </span>
         </div>
 
         {isError && (
-          <div role="alert" className="p-4 m-4 glass-surface rounded-xl border border-yellow-200 dark:border-yellow-700/50 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-700 dark:text-yellow-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div
+            role="alert"
+            className="m-4 flex items-start gap-3 rounded-xl border border-warn-line bg-warn-fill p-4"
+          >
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warn-ink" aria-hidden="true" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Cannot load users</p>
-              <p className="text-xs text-yellow-700 dark:text-yellow-400/80 mt-1">{error instanceof Error ? error.message : 'Network error'}</p>
+              <p className="text-sm font-medium text-warn-ink">Cannot load users</p>
+              <p className="mt-1 text-xs text-warn-ink/90">
+                {error instanceof Error ? error.message : 'Network error'}
+              </p>
               <button
                 type="button"
                 onClick={() => refetch()}
-                className="mt-2 text-xs font-medium text-yellow-800 dark:text-yellow-300 underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 rounded"
+                className="mt-2 text-xs font-medium text-warn-ink underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-moss rounded"
               >
                 Retry
               </button>
@@ -73,25 +83,29 @@ export default function Users() {
         )}
 
         {!isError && isLoading && (
-          <p className="p-8 text-center text-sm text-gray-600 dark:text-slate-400" role="status">Loading users…</p>
+          <p className="p-8 text-center text-sm text-muted" role="status">
+            Loading users…
+          </p>
         )}
 
         {!isError && !isLoading && users.length === 0 && (
           <div className="p-8 text-center">
-            <Inbox className="w-10 h-10 mx-auto text-gray-500 dark:text-slate-500 mb-2" aria-hidden="true" />
-            <p className="text-sm text-gray-700 dark:text-slate-300 font-medium">No users yet</p>
-            <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Once someone signs up, they will appear here.</p>
+            <Inbox className="mx-auto mb-2 h-10 w-10 text-muted" aria-hidden="true" />
+            <p className="text-sm font-medium text-ink">No users yet</p>
+            <p className="mt-1 text-xs text-muted">
+              Once someone signs up, they will appear here.
+            </p>
           </div>
         )}
 
         {!isError && !isLoading && users.length > 0 && filtered.length === 0 && (
           <div className="p-8 text-center">
-            <Search className="w-10 h-10 mx-auto text-gray-500 dark:text-slate-500 mb-2" aria-hidden="true" />
-            <p className="text-sm text-gray-700 dark:text-slate-300 font-medium">No users match “{q}”</p>
+            <Search className="mx-auto mb-2 h-10 w-10 text-muted" aria-hidden="true" />
+            <p className="text-sm font-medium text-ink">No users match &ldquo;{q}&rdquo;</p>
             <button
               type="button"
               onClick={() => setQ('')}
-              className="mt-2 text-xs font-medium text-blue-700 dark:text-blue-400 underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+              className="mt-2 text-xs font-medium text-moss underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-moss rounded"
             >
               Clear search
             </button>
@@ -101,46 +115,38 @@ export default function Users() {
         {!isError && !isLoading && filtered.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-slate-800/30 border-b border-gray-200 dark:border-slate-700/60">
+              <thead className="border-b border-line bg-paper">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase" scope="col">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase" scope="col">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase" scope="col">Joined</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase" scope="col">Rides</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase" scope="col">Status</th>
+                  <th scope="col" className="ops-eyebrow px-6 py-3 text-left text-[10px] text-muted">User</th>
+                  <th scope="col" className="ops-eyebrow px-6 py-3 text-left text-[10px] text-muted">Email</th>
+                  <th scope="col" className="ops-eyebrow px-6 py-3 text-left text-[10px] text-muted">Joined</th>
+                  <th scope="col" className="ops-eyebrow px-6 py-3 text-left text-[10px] text-muted">Rides</th>
+                  <th scope="col" className="ops-eyebrow px-6 py-3 text-left text-[10px] text-muted">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200/70 dark:divide-slate-700/60">
+              <tbody className="divide-y divide-line">
                 {filtered.map((user) => (
-                  <tr key={user.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
+                  <tr key={user.id} className="transition-colors hover:bg-moss-soft/40">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-blue-100 to-violet-100 dark:from-blue-900/50 dark:to-violet-900/50 rounded-full flex items-center justify-center text-blue-700 dark:text-blue-300 font-semibold text-sm ring-1 ring-white dark:ring-slate-700" aria-hidden="true">
+                        <span
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-moss-soft text-sm font-semibold text-moss ring-1 ring-line"
+                          aria-hidden="true"
+                        >
                           {user.name?.[0]?.toUpperCase() ?? '?'}
-                        </div>
-                        <span className="font-medium text-gray-900 dark:text-slate-100">{user.name || '—'}</span>
+                        </span>
+                        <span className="font-medium text-ink">{user.name || '—'}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">{user.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">{user.createdAt ?? '—'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-white font-semibold">{user.ridesCount ?? 0}</td>
+                    <td className="px-6 py-4 text-sm text-ink">{user.email}</td>
+                    <td className="ops-figures px-6 py-4 font-mono text-xs text-muted">
+                      {user.createdAt ?? '—'}
+                    </td>
+                    <td className="ops-figures px-6 py-4 text-right font-mono text-sm font-semibold text-ink">
+                      {user.ridesCount ?? 0}
+                    </td>
                     <td className="px-6 py-4">
-                      {user.status === 'suspended' ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-gray-700 dark:text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-500 dark:bg-slate-400" aria-hidden="true" />
-                          Suspended
-                        </span>
-                      ) : user.status === 'pending' ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-gray-700 dark:text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-yellow-600 dark:bg-yellow-400" aria-hidden="true" />
-                          Pending
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-gray-700 dark:text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-700 dark:bg-green-400" aria-hidden="true" />
-                          Active
-                        </span>
-                      )}
+                      <StatusPill status={user.status} />
                     </td>
                   </tr>
                 ))}
@@ -148,7 +154,32 @@ export default function Users() {
             </table>
           </div>
         )}
-      </div>
+      </section>
     </div>
+  );
+}
+
+function StatusPill({ status }: { status?: User['status'] }) {
+  if (status === 'suspended') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-muted">
+        <span className="h-1.5 w-1.5 rounded-full bg-muted" aria-hidden="true" />
+        Suspended
+      </span>
+    );
+  }
+  if (status === 'pending') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-amber-ink">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber" aria-hidden="true" />
+        Pending
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs text-moss">
+      <span className="h-1.5 w-1.5 rounded-full bg-moss" aria-hidden="true" />
+      Active
+    </span>
   );
 }
