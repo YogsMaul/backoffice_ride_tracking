@@ -40,6 +40,8 @@ export const authAPI = {
     api.post('/api/v1/auth/verify-otp', { email, otp }),
   resetPassword: (email: string, otp: string, password: string, confirmPassword: string) =>
     api.post('/api/v1/auth/reset-password', { email, otp, password, confirm_password: confirmPassword }),
+  changePassword: (oldPassword: string, newPassword: string) =>
+    api.post('/api/v1/auth/change-password', { old_password: oldPassword, new_password: newPassword }),
   logout: () => api.post('/api/v1/auth/logout'),
 };
 

@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Bell, Sun, Moon, ChevronDown, LogOut, Menu, User as UserIcon, X, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Bell, Sun, Moon, ChevronDown, LogOut, Menu, User as UserIcon, X, ChevronsLeft, ChevronsRight, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import ConfirmModal from './ConfirmModal';
+import ChangePasswordModal from './ChangePasswordModal';
 
 interface MeResponse {
   id: string;
@@ -28,7 +29,9 @@ export default function TopBar({ sidebarOpen = false, onMenuToggle, collapsed = 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [pwSuccessMessage, setPwSuccessMessage] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -42,6 +45,12 @@ export default function TopBar({ sidebarOpen = false, onMenuToggle, collapsed = 
     }
     localStorage.setItem('admin_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!pwSuccessMessage) return;
+    const t = setTimeout(() => setPwSuccessMessage(null), 3000);
+    return () => clearTimeout(t);
+  }, [pwSuccessMessage]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -199,6 +208,19 @@ export default function TopBar({ sidebarOpen = false, onMenuToggle, collapsed = 
                 role="menuitem"
                 onClick={() => {
                   setMenuOpen(false);
+                  setShowChangePasswordModal(true);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-paper transition-colors focus:outline-none focus-visible:bg-paper"
+              >
+                <KeyRound className="w-4 h-4" />
+                Ubah Password
+              </button>
+              <div className="border-t border-line" />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
                   setShowLogoutModal(true);
                 }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-warn-ink hover:bg-warn-fill transition-colors focus:outline-none focus-visible:bg-warn-fill"
@@ -221,6 +243,20 @@ export default function TopBar({ sidebarOpen = false, onMenuToggle, collapsed = 
         onConfirm={confirmLogout}
         onCancel={() => setShowLogoutModal(false)}
       />
+      <ChangePasswordModal
+        open={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+        onSuccess={() => setPwSuccessMessage('Password berhasil diubah.')}
+      />
+      {pwSuccessMessage && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-moss text-card shadow-xl text-sm font-medium"
+        >
+          {pwSuccessMessage}
+        </div>
+      )}
     </header>
   );
 }
