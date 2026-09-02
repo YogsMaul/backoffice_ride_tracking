@@ -13,7 +13,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen dashboard-bg">
+    <div className="min-h-screen bg-paper text-ink">
       <TopBar
         sidebarOpen={sidebarOpen}
         onMenuToggle={() => setSidebarOpen((prev) => !prev)}

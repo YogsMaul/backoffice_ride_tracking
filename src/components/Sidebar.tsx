@@ -38,10 +38,10 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
   ];
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 group ${
+    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 group ${
       isActive
-        ? 'bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950 text-blue-700 dark:text-blue-300 font-medium shadow-sm'
-        : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:translate-x-0.5'
+        ? 'bg-moss-soft text-moss font-medium shadow-sm'
+        : 'text-ink hover:bg-paper hover:translate-x-0.5'
     }`;
 
   return (
@@ -49,7 +49,7 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
       {/* Scrim when mobile menu is open */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-30 bg-black/30"
+          className="md:hidden fixed inset-0 z-30 bg-ink/30"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -59,43 +59,41 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
         id="primary-nav"
         className={`fixed top-16 md:top-0 left-0 bottom-0 z-40 ${
           collapsed ? 'md:w-16' : 'md:w-64'
-        } w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-r border-gray-200 dark:border-slate-800 md:rounded-r-2xl flex flex-col transform transition-all duration-300 ${
+        } w-64 bg-card/95 backdrop-blur border-r border-line md:rounded-r-2xl flex flex-col transform transition-all duration-300 ${
           open ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
         {/* Mobile-only close row */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-800 md:hidden">
+        <div className="flex items-center justify-between p-4 border-b border-line md:hidden">
           <div className="flex items-center gap-2" aria-hidden="true">
-            <span className="block w-2 h-2 rounded-full bg-blue-600" />
-            <span className="block w-2 h-2 rounded-full bg-violet-600" />
-            <span className="block h-0.5 w-5 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full" />
+            <span className="block w-2 h-2 rounded-full bg-moss" />
+            <span className="block h-0.5 w-5 bg-moss rounded-full" />
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="p-2 -mr-2 rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="p-2 -mr-2 rounded-lg text-ink hover:bg-paper focus:outline-none focus-visible:ring-2 focus-visible:ring-moss"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Desktop brand header */}
-        <div className={`hidden md:block border-b border-gray-200 dark:border-slate-800 bg-gradient-to-br from-blue-50/50 to-violet-50/30 dark:from-blue-950/30 dark:to-violet-950/30 ${collapsed ? 'p-3' : 'p-5'}`}>
+        <div className={`hidden md:block border-b border-line bg-moss-soft ${collapsed ? 'p-3' : 'p-5'}`}>
           {collapsed ? (
             <div className="flex flex-col items-center gap-2" aria-hidden="true">
-              <span className="block w-2 h-2 rounded-full bg-blue-600" />
-              <span className="block w-2 h-2 rounded-full bg-violet-600" />
+              <span className="block w-2 h-2 rounded-full bg-moss" />
+              <span className="block h-0.5 w-5 bg-moss rounded-full" />
             </div>
           ) : (
             <>
               <div className="flex items-center gap-2 mb-2" aria-hidden="true">
-                <span className="block w-2 h-2 rounded-full bg-blue-600" />
-                <span className="block w-2 h-2 rounded-full bg-violet-600" />
-                <span className="block h-0.5 w-5 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full" />
+                <span className="block w-2 h-2 rounded-full bg-moss" />
+                <span className="block h-0.5 w-5 bg-moss rounded-full" />
               </div>
-              <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100">Ride Tracking</h1>
-              <p className="text-xs text-gray-500 dark:text-slate-400">Admin Dashboard</p>
+              <h1 className="text-lg font-bold text-ink">Ride Tracking</h1>
+              <p className="text-xs text-muted">Admin Dashboard</p>
             </>
           )}
         </div>
@@ -117,12 +115,12 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-slate-800">
+        <div className="p-4 border-t border-line">
           <button
             type="button"
             onClick={handleLogout}
             title={collapsed ? 'Logout' : undefined}
-            className={`flex items-center gap-3 px-4 py-3 w-full rounded-lg text-gray-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-700 dark:hover:text-red-400 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-lg text-ink hover:bg-warn-fill hover:text-warn-ink transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 ${
               collapsed ? 'justify-center px-0' : ''
             }`}
           >
