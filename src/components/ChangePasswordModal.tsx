@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import { authAPI } from '../lib/api';
 
@@ -83,8 +84,10 @@ export default function ChangePasswordModal({ open, onClose, onSuccess }: Change
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  // Portal ke document.body supaya fixed positioning mengacu ke viewport,
+  // bukan ke stacking context parent (header TopBar yang fixed z-20).
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-ink/40"
         onClick={loading ? undefined : onClose}
@@ -238,6 +241,7 @@ export default function ChangePasswordModal({ open, onClose, onSuccess }: Change
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
