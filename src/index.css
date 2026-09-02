@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Overpass:wght@400;500;600;700&family=Overpass+Mono:wght@400;600&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
