@@ -50,8 +50,84 @@ export const statsAPI = {
 export const ridesAPI = {
   getActive: () => api.get('/api/v1/admin/rides?status=active'),
   getHistory: () => api.get('/api/v1/admin/rides?status=completed'),
+  // Tanpa filter status — dipakai log "ride terakhir" di dashboard, yang justru
+  // perlu melihat planned dan cancelled juga.
+  getRecent: (limit = 6) => api.get(`/api/v1/admin/rides?limit=${limit}`),
 };
 
 export const usersAPI = {
   getAll: () => api.get('/api/v1/admin/users'),
 };
+
+/* ---------------------------------------------------------------------------
+   Bentuk data dari backend.
+
+   Field-field baru ditulis opsional dengan sengaja. Kalau binary backend yang
+   sedang jalan masih versi lama, field-nya memang tidak ada — dan halaman harus
+   bisa mengatakan "angkanya tidak dikirim" alih-alih menampilkan 0 sebagai
+   fakta. Itu persis bug yang bikin dashboard ini dulu memamerkan angka nol.
+   Nama field mengikuti tag JSON di backend, jadi jangan di-camelCase-kan.
+   --------------------------------------------------------------------------- */
+
+/** Satu baris dari GET /api/v1/admin/rides — repository.RideSummary. */
+export interface RideRow {
+  id: string;
+  owner_id: string;
+  /** Nama pemilik hasil LEFT JOIN users; string kosong kalau usernya terhapus. */
+  owner_name?: string;
+  invite_code?: string;
+  /** planned | active | completed | cancelled. Sengaja string, bukan union:
+   *  status baru di backend tidak boleh bikin halaman ini pecah. */
+  status: string;
+  started_at?: string | null;
+  ended_at?: string | null;
+  created_at: string;
+  members_count?: number;
+}
+
+export interface RidesListResponse {
+  rides?: RideRow[];
+  limit?: number;
+  offset?: number;
+  status?: string;
+}
+
+export interface RideStatusBreakdown {
+  planned: number;
+  active: number;
+  completed: number;
+  cancelled: number;
+}
+
+/** Jumlah ride yang dibuat per jam, indeks 0–23. */
+export interface ActivityProfile {
+  today: number[];
+  yesterday: number[];
+  current_hour: number;
+}
+
+/** GET /api/v1/admin/stats. */
+export interface StatsOverview {
+  users?: number;
+  rides?: number;
+  rides_today?: number;
+  by_status?: RideStatusBreakdown;
+  activity?: ActivityProfile;
+  /** Waktu server saat angka dihitung, RFC3339. */
+  generated_at?: string;
+  /** Zona waktu yang benar-benar dipakai backend untuk batas "hari ini". */
+  time_zone?: string;
+}
+
+export interface UserRow {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  created_at?: string;
+  ridesCount?: number;
+}
+
+export interface UsersListResponse {
+  users?: UserRow[];
+}

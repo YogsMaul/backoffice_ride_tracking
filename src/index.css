@@ -1,39 +1,221 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Overpass:wght@400;500;600;700&family=Overpass+Mono:wght@400;600&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* H-13 / R-32: visible focus indicator everywhere. */
+/* ===============================================================
+   ARAH VISUAL — "papan dispatch"
+
+   Konsol ini mengawasi sesi ride yang sedang berjalan. Rujukannya
+   bukan template admin, tapi benda kerja di dunia yang sama:
+   papan keberangkatan terminal dan rambu penunjuk jalan.
+
+   Warna     : hijau rambu tua sebagai panel gelap, kertas kelabu
+               kehijauan sebagai halaman, moss untuk aksen, amber
+               HANYA untuk keadaan "sedang berjalan".
+   Tipografi : Archivo Narrow (kondensat, untuk papan dan angka
+               besar), Overpass (turunan Highway Gothic, badan
+               teks), Overpass Mono (angka dan id — bacaan alat).
+   Tata letak: baris berhairline seperti buku besar, bukan grid
+               kartu. Satu panel gelap jadi pusat perhatian,
+               sisanya sengaja tenang.
+
+   Semua warna lewat variabel, jadi mode gelap tinggal menukar
+   nilainya di .dark — tidak ada kelas dark: yang perlu ditulis
+   dua kali di tiap komponen.
+   =============================================================== */
+
+:root {
+  color-scheme: light;
+
+  --t-paper: #e9ede9;
+  --t-card: #ffffff;
+
+  /* Panel dispatch — hijau rambu yang digelapkan. */
+  --t-dispatch: #0c1f1a;
+  --t-dispatch-row: #17322b;
+  --t-dispatch-line: #26483e;
+  --t-dispatch-text: #eaf2ec;
+  --t-dispatch-muted: #93ab9f;
+
+  --t-ink: #14201c;
+  --t-muted: #4a5c53;
+  --t-line: #ccd6ce;
+
+  --t-moss: #2e6b4f;
+  --t-moss-soft: #dceae0;
+
+  /* Amber = "sedang berjalan". Di atas terang kontrasnya cuma
+     2,4:1, jadi --t-amber khusus penanda non-teks (titik, bar);
+     kalau perlu jadi teks pakai --t-amber-ink. */
+  --t-amber: #e39b12;
+  --t-amber-ink: #8a5a00;
+
+  --t-warn-ink: #7c4a03;
+  --t-warn-fill: #fdf0d8;
+  --t-warn-line: #e9c98a;
+  --t-danger-ink: #9b2c2c;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --t-paper: #08120f;
+  --t-card: #0e1a16;
+
+  --t-dispatch: #050d0b;
+  --t-dispatch-row: #12241f;
+  --t-dispatch-line: #1e3a32;
+  --t-dispatch-text: #e6efe8;
+  --t-dispatch-muted: #8ba397;
+
+  --t-ink: #e7efe9;
+  --t-muted: #9ab0a4;
+  --t-line: #21332c;
+
+  --t-moss: #5fbf8e;
+  --t-moss-soft: #14291f;
+
+  --t-amber: #f0b23c;
+  --t-amber-ink: #f0b23c;
+
+  --t-warn-ink: #f4cd7e;
+  --t-warn-fill: #221a08;
+  --t-warn-line: #4a3a12;
+  --t-danger-ink: #f4a09a;
+}
+
+/* @theme inline dipakai supaya Tailwind memancarkan
+   `var(--t-paper)` di kelas hasilnya, bukan nilai hex-nya. Itu yang
+   membuat bg-paper, text-ink, border-line dan kawan-kawan ikut
+   berubah begitu .dark menempel di <html>. */
+@theme inline {
+  --color-paper: var(--t-paper);
+  --color-card: var(--t-card);
+
+  --color-dispatch: var(--t-dispatch);
+  --color-dispatch-row: var(--t-dispatch-row);
+  --color-dispatch-line: var(--t-dispatch-line);
+  --color-dispatch-text: var(--t-dispatch-text);
+  --color-dispatch-muted: var(--t-dispatch-muted);
+
+  --color-ink: var(--t-ink);
+  --color-muted: var(--t-muted);
+  --color-line: var(--t-line);
+
+  --color-moss: var(--t-moss);
+  --color-moss-soft: var(--t-moss-soft);
+
+  --color-amber: var(--t-amber);
+  --color-amber-ink: var(--t-amber-ink);
+
+  --color-warn-ink: var(--t-warn-ink);
+  --color-warn-fill: var(--t-warn-fill);
+  --color-warn-line: var(--t-warn-line);
+  --color-danger-ink: var(--t-danger-ink);
+
+  --font-display: 'Archivo Narrow', 'Arial Narrow', 'Segoe UI', sans-serif;
+  --font-sans: 'Overpass', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Overpass Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--t-paper);
+  color: var(--t-ink);
+}
+
+/* Angka di papan dan buku besar harus sejajar antar baris, kalau
+   tidak kolomnya bergetar tiap detik saat timer jalan. */
+.ops-figures {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Eyebrow papan dispatch: kondensat, huruf besar, spasi lebar. */
+.ops-eyebrow {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+/* H-13 / R-32: indikator fokus tetap terlihat, sekarang moss. */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--t-moss);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-.dark :focus-visible {
-  outline-color: #60a5fa;
-}
-
-/* H-12: small deltas need emerald-700, not 600, to pass AA. */
-.text-emerald-600 {
-  color: #047857;
-}
-
-/* M-7: focused input above the on-screen keyboard on mobile. */
+/* M-7: input yang sedang fokus tidak tertutup keyboard di ponsel. */
 html {
   scroll-padding-bottom: 12rem;
 }
 
+/* Latar halaman konsol. Sengaja rata — gradien radial ungu/biru
+   yang dulu di sini melawan panel dispatch dan bikin dua pusat
+   perhatian. */
+.dashboard-bg {
+  background-color: var(--t-paper);
+}
+
+/* --- Satu momen gerak yang diatur: bar profil aktivitas naik dari
+   nol saat panel muncul, bertahap dari jam 00 ke jam 23. Delay-nya
+   diatur di komponen (index * 14ms). --- */
+.ops-bar {
+  transition: height 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Kursor jam sekarang berkedip HANYA kalau ada ride aktif —
+   komponen yang memutuskan kelas ini dipakai atau tidak. */
+.ops-live {
+  animation: opsLive 2.4s ease-in-out infinite;
+}
+
+@keyframes opsLive {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.page-enter {
+  animation: pageEnter 380ms ease-out both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .ops-live {
+    animation: none;
+  }
+
+  .ops-bar {
+    transition: none;
+  }
+}
+
 /* ---------------------------------------------------------------
-   Login page — split layout (md+), stacked (mobile).
-   - Left half: brand wordmark, illustration, tagline, soft orbs.
-   - Right half: glass card with the login form.
-   - Glass is used once in the entire app (R-10 dose cap).
-   - One slow ambient animation: the illustration drifts (R-19, MOTION=1).
+   Halaman login — di luar cakupan penyeragaman ini. Arah visualnya
+   masih yang lama (split layout, orb lembut, satu gerak ambient)
+   dan dibiarkan utuh supaya tidak setengah jadi.
    --------------------------------------------------------------- */
 
 .login-bg {
   background:
-    radial-gradient(1200px 600px at 0% 0%,   #ede9fe 0%, transparent 60%),
+    radial-gradient(1200px 600px at 0% 0%, #ede9fe 0%, transparent 60%),
     radial-gradient(1000px 500px at 100% 0%, #dbeafe 0%, transparent 55%),
     radial-gradient(900px 700px at 50% 100%, #fce7f3 0%, transparent 60%),
     linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
@@ -41,14 +223,12 @@ html {
 
 .dark .login-bg {
   background:
-    radial-gradient(1200px 600px at 0% 0%,   rgba(124, 58, 237, 0.20) 0%, transparent 60%),
+    radial-gradient(1200px 600px at 0% 0%, rgba(124, 58, 237, 0.2) 0%, transparent 60%),
     radial-gradient(1000px 500px at 100% 0%, rgba(37, 99, 235, 0.18) 0%, transparent 55%),
     radial-gradient(900px 700px at 50% 100%, rgba(219, 39, 119, 0.12) 0%, transparent 60%),
     #0b1020;
 }
 
-/* Left brand panel surface tint — slightly different from the form panel so
-   the split reads even without the orbs. R-20 identity thread. */
 .login-brand {
   background:
     radial-gradient(700px 500px at 20% 30%, rgba(196, 181, 253, 0.25) 0%, transparent 60%),
@@ -59,7 +239,6 @@ html {
   background: transparent;
 }
 
-/* Decorative orbs live inside the left panel only. */
 .login-orb {
   position: absolute;
   border-radius: 9999px;
@@ -69,109 +248,42 @@ html {
   z-index: 0;
 }
 .login-orb--a {
-  top: -8%; left: -10%;
-  width: 320px; height: 320px;
+  top: -8%;
+  left: -10%;
+  width: 320px;
+  height: 320px;
   background: radial-gradient(circle, #c4b5fd 0%, transparent 70%);
 }
 .login-orb--b {
-  top: 25%; right: -12%;
-  width: 360px; height: 360px;
+  top: 25%;
+  right: -12%;
+  width: 360px;
+  height: 360px;
   background: radial-gradient(circle, #93c5fd 0%, transparent 70%);
 }
 .login-orb--c {
-  bottom: -10%; left: 25%;
-  width: 340px; height: 340px;
+  bottom: -10%;
+  left: 25%;
+  width: 340px;
+  height: 340px;
   background: radial-gradient(circle, #fbcfe8 0%, transparent 70%);
 }
 
-/* Illustration ambient drift — single motion in the app (R-19, MOTION=1). */
 .login-illustration-anim {
   animation: loginDrift 24s ease-in-out infinite alternate;
 }
 
 @keyframes loginDrift {
-  from { transform: translate3d(-3%, -2%, 0); }
-  to   { transform: translate3d(3%, 2%, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-illustration-anim { animation: none; }
-}
-
-.dashboard-bg {
-  background:
-    radial-gradient(1400px 800px at 10% 0%, #f5f3ff 0%, transparent 50%),
-    radial-gradient(1200px 700px at 90% 100%, #eff6ff 0%, transparent 50%),
-    #f9fafb;
-}
-
-.dark .dashboard-bg {
-  background:
-    radial-gradient(1400px 800px at 10% 0%, rgba(99, 102, 241, 0.10) 0%, transparent 50%),
-    radial-gradient(1200px 700px at 90% 100%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-    #0d1326;
-}
-
-.glass-surface {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.dark .glass-surface {
-  background: #1e293b;
-  border: 1px solid #64748b;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.glass-surface-strong {
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.dark .glass-surface-strong {
-  background: #1e293b;
-  border: 1px solid #64748b;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.page-enter {
-  animation: pageEnter 420ms ease-out both;
-}
-
-.card-lift {
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-}
-
-.card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 45px -30px rgba(15, 23, 42, 0.35);
-}
-
-@keyframes pageEnter {
   from {
-    opacity: 0;
-    transform: translateY(10px);
+    transform: translate3d(-3%, -2%, 0);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(3%, 2%, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-enter {
+  .login-illustration-anim {
     animation: none;
-  }
-
-  .card-lift,
-  .card-lift:hover {
-    transition: none;
-    transform: none;
   }
 }
