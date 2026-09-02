@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import loginIllustration from '../assets/login-illustration.svg';
+import PasswordInput from '../components/PasswordInput';
 
 // H-1 (preserved): prefill is opt-in via env. Default is empty.
 const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL as string | undefined;
@@ -111,13 +112,11 @@ export default function Login() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1" htmlFor="password">Password</label>
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-white/80 dark:bg-slate-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 placeholder:text-gray-500 dark:placeholder:text-slate-500"
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
