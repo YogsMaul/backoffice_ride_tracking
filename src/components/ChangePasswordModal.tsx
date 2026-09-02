@@ -26,6 +26,7 @@ export default function ChangePasswordModal({ open, onClose, onSuccess }: Change
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +39,7 @@ export default function ChangePasswordModal({ open, onClose, onSuccess }: Change
       setError(null);
       setShowOld(false);
       setShowNew(false);
+      setShowConfirm(false);
       // Delay focus biar transition modal keburu selesai
       setTimeout(() => firstInputRef.current?.focus(), 50);
     }
@@ -191,16 +193,27 @@ export default function ChangePasswordModal({ open, onClose, onSuccess }: Change
             <label htmlFor="confirm-pw" className="block text-sm font-medium text-ink mb-1.5">
               Konfirmasi Password Baru
             </label>
-            <input
-              id="confirm-pw"
-              type={showNew ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={loading}
-              autoComplete="new-password"
-              className="w-full px-3 py-2 rounded-lg border border-line bg-paper text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-50"
-              placeholder="Ketik ulang password baru"
-            />
+            <div className="relative">
+              <input
+                id="confirm-pw"
+                type={showConfirm ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="new-password"
+                className="w-full px-3 py-2 pr-10 rounded-lg border border-line bg-paper text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-50"
+                placeholder="Ketik ulang password baru"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((v) => !v)}
+                tabIndex={-1}
+                aria-label={showConfirm ? 'Sembunyikan password' : 'Tampilkan password'}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-ink"
+              >
+                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
             {confirmPassword.length > 0 && !confirmMatch && (
               <p className="text-xs text-warn-ink mt-1.5 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
