@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
-import loginIllustration from '../assets/login-illustration.svg';
 import PasswordInput from '../components/PasswordInput';
 
 // H-1 (preserved): prefill is opt-in via env. Default is empty.
@@ -35,83 +34,57 @@ export default function Login() {
 
   return (
     // R-03: min-h-screen (not h-screen) so the on-screen keyboard does not crop content.
-    <div className="login-bg min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
-      {/* Left: brand + illustration. Hidden on mobile, shown md+. */}
-      <aside className="login-brand relative hidden md:flex flex-col justify-between p-10 lg:p-14 overflow-hidden">
-        {/* Decorative orbs (R-13: glow as accent, single screen). */}
-        <div className="login-orb login-orb--a" aria-hidden="true" />
-        <div className="login-orb login-orb--b" aria-hidden="true" />
-        <div className="login-orb login-orb--c" aria-hidden="true" />
-
-        {/* Identity motif + wordmark at the top. */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="inline-flex items-center gap-1.5" aria-hidden="true">
-            <span className="block w-2.5 h-2.5 rounded-full bg-blue-600" />
-            <span className="block w-2.5 h-2.5 rounded-full bg-violet-600" />
-            <span className="block h-0.5 w-6 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full" />
-          </div>
-          <span className="font-bold text-gray-900 dark:text-white text-lg">Ride Tracking</span>
-        </div>
-
-        {/* Center: illustration + tagline. */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-md mx-auto">
-          <img
-            src={loginIllustration}
-            alt=""
-            className="w-full max-w-sm h-auto mb-8 login-illustration-anim"
-          />
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-            Watch every ride, in real time.
-          </h1>
-          <p className="text-sm lg:text-base text-gray-700 dark:text-slate-300 mt-3">
-            Live fleet telemetry, user activity, and ride history in one place.
-          </p>
-        </div>
-
-        {/* Bottom: small build/version stamp. */}
-        <div className="relative z-10 text-xs text-gray-500 dark:text-slate-400">
-          v1.0 · Operations console
-        </div>
-      </aside>
-
-      {/* Right: form. Single glass surface. R-10 single-use glass. */}
-      <main className="flex items-center justify-center p-4 sm:p-8 md:p-10">
-        <div className="login-card w-full max-w-md rounded-2xl border border-white/40 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(15,23,42,0.18)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] p-8">
-          {/* Identity motif shown only on mobile (left side carries it on md+). */}
-          <div className="md:hidden inline-flex items-center gap-1.5 mb-4" aria-hidden="true">
-            <span className="block w-2.5 h-2.5 rounded-full bg-blue-600" />
-            <span className="block w-2.5 h-2.5 rounded-full bg-violet-600" />
-            <span className="block h-0.5 w-6 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full" />
+    <div className="min-h-screen w-full bg-paper">
+      <main className="flex min-h-screen items-center justify-center p-4 sm:p-8 md:p-10">
+        <div className="w-full max-w-md rounded-2xl border border-line bg-card p-8 shadow-[0_24px_60px_-30px_rgba(12,31,26,0.25)]">
+          <div className="mb-8 flex items-center gap-2" aria-hidden="true">
+            <span className="block h-2.5 w-2.5 rounded-full bg-moss" />
+            <span className="block h-0.5 w-6 rounded-full bg-moss" />
+            <span className="font-display text-lg font-bold uppercase tracking-wide text-ink">
+              Ride Tracking
+            </span>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Login</h2>
-            <p className="text-sm text-gray-700 dark:text-slate-300 mt-1">Sign in to access the operations dashboard.</p>
+            <p className="ops-eyebrow text-[10px] text-moss">Operations console</p>
+            <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">
+              Admin Login
+            </h1>
+            <p className="mt-2 text-sm text-muted">
+              Sign in to access the operations dashboard.
+            </p>
           </div>
 
           {error && (
-            <div role="alert" className="mb-4 p-3 text-sm text-red-700 dark:text-red-300 bg-red-50/90 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg">
+            <div
+              role="alert"
+              className="mb-4 rounded-lg border border-warn-line bg-warn-fill p-3 text-sm text-warn-ink"
+            >
               {error}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1" htmlFor="email">Email</label>
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
+                Email
+              </label>
               <input
                 id="email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-white/80 dark:bg-slate-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 placeholder:text-gray-500 dark:placeholder:text-slate-500"
+                className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-moss"
                 placeholder="admin@example.com"
                 autoComplete="email"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1" htmlFor="password">Password</label>
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-ink">
+                Password
+              </label>
               <PasswordInput
                 id="password"
                 required
@@ -125,15 +98,15 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="w-full rounded-lg bg-moss px-4 py-2.5 font-medium text-card transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 dark:text-slate-400 mt-6">
+          <p className="mt-6 text-center text-sm text-muted">
             Forgot your password?{' '}
-            <a href="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="/forgot-password" className="font-medium text-moss hover:underline">
               Reset Password
             </a>
           </p>
