@@ -30,15 +30,14 @@
   --t-paper: #e9ede9;
   --t-card: #ffffff;
 
-  /* Panel dispatch — abu-hijau gelap seperti papan konsol, bukan
-     void hitam. Cukup kontras dengan --t-card (#fff) tanpa terasa
-     "lubang". Hirarki di dalam panel: row (sedikit lebih gelap)
-     untuk sesi, line (sedikit lebih terang) untuk hairline. */
-  --t-dispatch: #2a3f39;
-  --t-dispatch-row: #1f302b;
-  --t-dispatch-line: #3d564d;
-  --t-dispatch-text: #ecf3ee;
-  --t-dispatch-muted: #a3b8ad;
+  /* Panel dispatch — medium abu-hijau, ditonjolin via border + shadow,
+     bukan dengan warna gelap pekat. Cukup kontras dengan --t-card
+     untuk jadi pusat perhatian, tapi ga "void". */
+  --t-dispatch: #d4dcd6;
+  --t-dispatch-row: #c2ccc4;
+  --t-dispatch-line: #aab6ae;
+  --t-dispatch-text: #14201c;
+  --t-dispatch-muted: #4a5c53;
 
   --t-ink: #14201c;
   --t-muted: #4a5c53;
@@ -67,11 +66,11 @@
   --t-paper: #08120f;
   --t-card: #0e1a16;
 
-  --t-dispatch: #1a2a25;
-  --t-dispatch-row: #233632;
-  --t-dispatch-line: #324942;
-  --t-dispatch-text: #e6efe8;
-  --t-dispatch-muted: #8ba397;
+  --t-dispatch: #2a3a34;
+  --t-dispatch-row: #1f2c27;
+  --t-dispatch-line: #3a4d46;
+  --t-dispatch-text: #ecf3ee;
+  --t-dispatch-muted: #a3b8ad;
 
   --t-ink: #e7efe9;
   --t-muted: #9ab0a4;

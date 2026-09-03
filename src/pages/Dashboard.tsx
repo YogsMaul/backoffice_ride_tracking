@@ -133,12 +133,28 @@ export default function Dashboard() {
       )}
 
       <div className="grid gap-5 lg:grid-cols-3">
-        {/* ---- Panel dispatch: satu-satunya permukaan gelap di halaman ---- */}
-        <section className="rounded-xl bg-dispatch p-5 text-dispatch-text shadow-[0_24px_60px_-42px_rgba(12,31,26,0.85)] sm:p-7 lg:col-span-2">
+        {/* ---- Panel dispatch: medium tone dengan border + shadow supaya
+            "pop" di halaman terang tanpa harus jadi gelap pekat ---- */}
+        <section className="rounded-xl border border-dispatch-line bg-dispatch p-5 text-dispatch-text shadow-[0_24px_60px_-30px_rgba(12,31,26,0.35)] sm:p-7 lg:col-span-2">
           <div className="flex items-baseline justify-between gap-4">
             <p className="ops-eyebrow text-[10px] text-dispatch-muted">Sessions on the road</p>
             {stats?.time_zone && (
               <p className="ops-eyebrow text-[10px] text-dispatch-muted">{stats.time_zone}</p>
+            )}
+          </div>
+
+          <div className="mt-2 flex flex-wrap items-end gap-x-5 gap-y-2">
+            <p
+              className="ops-figures font-display text-[64px] leading-[0.82] font-semibold sm:text-[88px]"
+              aria-live="polite"
+            >
+              {statsQuery.isLoading ? '·' : (activeCount ?? '—')}
+            </p>
+            {live && (
+              <span className="mb-2 inline-flex items-center gap-2">
+                <span className="ops-live h-2 w-2 rounded-full bg-amber" aria-hidden="true" />
+                <span className="ops-eyebrow text-[10px] text-amber-ink">moving</span>
+              </span>
             )}
           </div>
 
