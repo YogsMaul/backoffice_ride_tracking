@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import PasswordInput from '../components/PasswordInput';
+import DispatchIllustration from '../components/DispatchIllustration';
 
 // H-1 (preserved): prefill is opt-in via env. Default is empty.
 const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL as string | undefined;
@@ -35,7 +36,8 @@ export default function Login() {
   return (
     // R-03: min-h-screen (not h-screen) so the on-screen keyboard does not crop content.
     <div className="min-h-screen w-full bg-paper">
-      <main className="flex min-h-screen items-center justify-center p-4 sm:p-8 md:p-10">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-4 sm:p-8 md:p-10">
+        <DispatchIllustration className="w-full max-w-md page-enter" />
         <div className="w-full max-w-md rounded-2xl border border-line bg-card p-8 shadow-[0_24px_60px_-30px_rgba(12,31,26,0.25)]">
           <div className="mb-8 flex items-center gap-2" aria-hidden="true">
             <span className="block h-2.5 w-2.5 rounded-full bg-moss" />

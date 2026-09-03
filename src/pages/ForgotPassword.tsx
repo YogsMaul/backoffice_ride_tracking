@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
+import DispatchIllustration from '../components/DispatchIllustration';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -26,7 +27,8 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen w-full bg-paper">
-      <main className="flex min-h-screen items-center justify-center p-4 sm:p-8 md:p-10">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-4 sm:p-8 md:p-10">
+        <DispatchIllustration className="w-full max-w-md page-enter" />
         <div className="w-full max-w-md rounded-2xl border border-line bg-card p-8 shadow-[0_24px_60px_-30px_rgba(12,31,26,0.25)]">
           <div className="mb-8 flex items-center gap-2" aria-hidden="true">
             <span className="block h-2.5 w-2.5 rounded-full bg-moss" />

@@ -200,9 +200,57 @@ html {
   }
 }
 
+/* --- Animasi ilustrasi dispatch di halaman auth.
+   Pulse: lingkaran "live" (pin & halo mobil) berkedip pelan.
+   Pulse-fast: halo mobil, lebih cepat dari pulse.
+   Ride: mobil bergerak di sepanjang path rute, loop halus. --- */
+.ops-pulse {
+  animation: opsPulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.ops-pulse-fast {
+  animation: opsPulse 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Mengikuti path rute (id 'routePath' di SVG). Browser support
+   `motion-path` sudah stabil di evergreen (Chrome 79+, Firefox 72+,
+   Safari 16+). Kalau belum support, mobil tetap tampil di posisi
+   awal tanpa animasi — fallback yang aman. */
+.ops-ride {
+  offset-path: path('M 70 240 Q 110 240 130 220 T 200 180 T 280 120 T 330 80');
+  offset-rotate: 0deg;
+  animation: opsRide 6s ease-in-out infinite alternate;
+}
+
+@keyframes opsPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes opsRide {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .page-enter,
-  .ops-live {
+  .ops-live,
+  .ops-pulse,
+  .ops-pulse-fast,
+  .ops-ride {
     animation: none;
   }
 
