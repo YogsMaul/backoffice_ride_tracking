@@ -158,21 +158,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="mt-2 flex flex-wrap items-end gap-x-5 gap-y-2">
-            <p
-              className="ops-figures font-display text-[64px] leading-[0.82] font-semibold sm:text-[88px]"
-              aria-live="polite"
-            >
-              {statsQuery.isLoading ? '·' : (activeCount ?? '—')}
-            </p>
-            {live && (
-              <span className="mb-2 inline-flex items-center gap-2">
-                <span className="ops-live h-2 w-2 rounded-full bg-amber" aria-hidden="true" />
-                <span className="ops-eyebrow text-[10px] text-amber">moving</span>
-              </span>
-            )}
-          </div>
-
           {activeRows.length > 0 ? (
             <>
               <ul className="mt-5 divide-y divide-dispatch-line border-t border-dispatch-line">
