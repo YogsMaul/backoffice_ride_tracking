@@ -42,10 +42,37 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-paper">
-      <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-4 sm:p-8 md:p-10">
+    <div className="grid min-h-screen w-full grid-cols-1 bg-paper md:grid-cols-2">
+      <aside className="relative hidden min-h-screen flex-col items-center justify-center gap-6 overflow-hidden border-r border-line bg-card p-8 md:flex md:p-10 lg:p-14">
+        <div className="flex items-center gap-2 self-start" aria-hidden="true">
+          <span className="block h-2.5 w-2.5 rounded-full bg-moss" />
+          <span className="block h-0.5 w-6 rounded-full bg-moss" />
+          <span className="font-display text-lg font-bold uppercase tracking-wide text-ink">
+            Ride Tracking
+          </span>
+        </div>
         <DispatchIllustration className="w-full max-w-md page-enter" />
+        <div className="text-center">
+          <p className="ops-eyebrow text-[10px] text-moss">Account recovery</p>
+          <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink lg:text-3xl">
+            Choose a new password.
+          </h1>
+          <p className="mt-2 text-sm text-muted">
+            Use 8 or more characters with a mix of cases and at least one number.
+          </p>
+        </div>
+        <p className="ops-figures self-end font-mono text-xs text-muted">v1.0 · Operations console</p>
+      </aside>
+
+      <main className="flex items-center justify-center p-4 sm:p-8 md:p-10">
         <div className="w-full max-w-md rounded-2xl border border-line bg-card p-8 shadow-[0_24px_60px_-30px_rgba(12,31,26,0.25)]">
+          <div className="mb-6 flex items-center gap-2 md:hidden" aria-hidden="true">
+            <span className="block h-2.5 w-2.5 rounded-full bg-moss" />
+            <span className="block h-0.5 w-6 rounded-full bg-moss" />
+            <span className="font-display text-lg font-bold uppercase tracking-wide text-ink">
+              Ride Tracking
+            </span>
+          </div>
           <div className="mb-8 flex items-center gap-2" aria-hidden="true">
             <span className="block h-2.5 w-2.5 rounded-full bg-moss" />
             <span className="block h-0.5 w-6 rounded-full bg-moss" />
