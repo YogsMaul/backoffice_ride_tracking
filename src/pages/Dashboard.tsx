@@ -7,22 +7,6 @@ import { ridesAPI, statsAPI } from '../lib/api';
 import type { RideRow, RidesListResponse, StatsOverview } from '../lib/api';
 import { clockOf, dateTimeOf, elapsedSince, shortId } from '../lib/format';
 
-/**
- * Papan dispatch.
- *
- * Halaman ini sebelumnya membaca field yang tidak pernah dikirim backend
- * (`activeRides`, `todayRides`, `totalUsers`, `totalDistanceKm`), lalu
- * menampilkan `0` dan tiga strip sebagai kalau-kalau itu fakta, ditemani pil
- * hijau "Live backend connected" yang di-hardcode. Sekarang:
- *
- *   - Nama field mengikuti /api/v1/admin/stats apa adanya.
- *   - Setiap angka yang tidak dikirim tampil sebagai strip, bukan nol.
- *   - Baris sumber di kanan atas menyebut endpoint, zona waktu, dan jam
- *     penghitungan yang benar-benar datang dari server.
- *   - Jarak tempuh tidak ditampilkan sama sekali: tabel ride_stats ada di
- *     schema.sql tapi tidak ada satu pun kode Go yang menulisinya, jadi angkanya
- *     akan selalu nol. Lebih baik tidak ada daripada nol yang menyesatkan.
- */
 export default function Dashboard() {
   const statsQuery = useQuery({
     queryKey: ['admin-stats'],
@@ -46,26 +30,12 @@ export default function Dashboard() {
   const activeRows = useMemo(() => readRides(activeQuery.data), [activeQuery.data]);
   const recentRows = useMemo(() => readRides(recentQuery.data), [recentQuery.data]);
 
-  /**
-   * Jumlah sesi berjalan diambil dari statistik, bukan dari panjang daftar:
-   * daftarnya dibatasi 20 baris oleh backend, jadi kalau ride aktif lebih banyak
-   * dari itu, panjang daftar akan diam-diam salah. Daftarnya tetap dipakai untuk
-   * isi barisnya.
-   */
   const activeCount = stats?.by_status?.active ?? null;
   const live = activeCount !== null ? activeCount > 0 : activeRows.length > 0;
   const truncated = activeCount !== null && activeCount > activeRows.length;
-
-  /**
-   * Binary backend yang masih versi lama hanya mengirim {users, rides}. Ketimbang
-   * merender strip di mana-mana tanpa penjelasan, katakan penyebabnya.
-   */
   const contractStale = Boolean(stats) && stats?.by_status === undefined;
-
   const lastRide = recentRows[0] ?? null;
 
-  // Timer hanya berdetak kalau ada yang perlu dihitung. Tanpa penjaga ini
-  // halaman ini merender ulang tiap detik seumur tab dibuka.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (activeRows.length === 0) return;
@@ -86,20 +56,16 @@ export default function Dashboard() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="ops-eyebrow text-[10px] text-moss">Operations</p>
+          <p className="ops-eyebrow text-[10px] text-moss">Operasional</p>
           <h1 className="font-display text-4xl leading-none font-semibold tracking-tight text-ink sm:text-5xl">
-            Dispatch Board
+            Papan Pantau
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Sessions on the road right now, and how today compares with yesterday.
+            Perjalanan yang sedang berjalan dan perbandingan aktivitas hari ini.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
-          <span className="ops-figures font-mono">GET /api/v1/admin/stats</span>
-          <span aria-hidden="true" className="text-line">
-            /
-          </span>
           <span className="ops-figures font-mono" aria-live="polite">
             {describeFetch(stats, statsQuery.dataUpdatedAt)}
           </span>
@@ -112,32 +78,31 @@ export default function Dashboard() {
               className={`h-3 w-3 ${refreshing ? 'animate-spin' : ''}`}
               aria-hidden="true"
             />
-            Refresh
+            Muat ulang
           </button>
         </div>
       </header>
 
       {statsQuery.isError && (
         <Notice
-          title="Cannot reach /api/v1/admin/stats"
-          detail={errorText(statsQuery.error)}
+          title="Tidak dapat terhubung ke server"
+          detail="Gagal mengambil data statistik operasional. Periksa koneksi backend Anda."
           onRetry={() => void statsQuery.refetch()}
         />
       )}
 
       {contractStale && (
         <Notice
-          title="Backend is running an older build"
-          detail="It only returns users and rides. Restart it (go run ./cmd/server) to get today's counts, the status breakdown, and the hourly profile."
+          title="Server menggunakan versi lama"
+          detail="Backend hanya mengembalikan data dasar. Muat ulang server untuk melihat rincian per jam dan status lengkap."
         />
       )}
 
       <div className="grid gap-5 lg:grid-cols-3">
-        {/* ---- Panel dispatch: medium tone dengan border + shadow supaya
-            "pop" di halaman terang tanpa harus jadi gelap pekat ---- */}
+        {/* Panel perjalanan aktif */}
         <section className="rounded-xl border border-dispatch-line bg-dispatch p-5 text-dispatch-text shadow-[0_24px_60px_-30px_rgba(12,31,26,0.35)] sm:p-7 lg:col-span-2">
           <div className="flex items-baseline justify-between gap-4">
-            <p className="ops-eyebrow text-[10px] text-dispatch-muted">Sessions on the road</p>
+            <p className="ops-eyebrow text-[10px] text-dispatch-muted">Sedang di perjalanan</p>
             {stats?.time_zone && (
               <p className="ops-eyebrow text-[10px] text-dispatch-muted">{stats.time_zone}</p>
             )}
@@ -153,7 +118,7 @@ export default function Dashboard() {
             {live && (
               <span className="mb-2 inline-flex items-center gap-2">
                 <span className="ops-live h-2 w-2 rounded-full bg-amber" aria-hidden="true" />
-                <span className="ops-eyebrow text-[10px] text-amber-ink">moving</span>
+                <span className="ops-eyebrow text-[10px] text-amber-ink">berjalan</span>
               </span>
             )}
           </div>
@@ -170,18 +135,18 @@ export default function Dashboard() {
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
-                          {ride.owner_name?.trim() || 'Owner unknown'}
+                          {ride.owner_name?.trim() || 'Pengendara tidak diketahui'}
                         </p>
                         <p className="ops-figures font-mono text-[11px] text-dispatch-muted">
                           {shortId(ride.id)}
                           {' · '}
-                          {ride.members_count ?? '—'} riders
+                          {ride.members_count ?? '—'} peserta
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
                         <p className="ops-figures font-mono text-base">{elapsed ?? '—'}</p>
                         <p className="ops-eyebrow text-[9px] text-dispatch-muted">
-                          {ride.started_at ? 'elapsed' : 'no start time'}
+                          {ride.started_at ? 'durasi' : 'belum mulai'}
                         </p>
                       </div>
                     </li>
@@ -190,20 +155,19 @@ export default function Dashboard() {
               </ul>
               {truncated && (
                 <p className="mt-2.5 text-[11px] text-dispatch-muted">
-                  Showing {activeRows.length} of {activeCount}. The list endpoint caps at 20
-                  rows per request.
+                  Menampilkan {activeRows.length} dari {activeCount} perjalanan aktif.
                 </p>
               )}
             </>
           ) : (
             <p className="mt-4 max-w-md text-sm text-dispatch-muted">
               {activeQuery.isLoading
-                ? 'Reading active sessions…'
+                ? 'Memuat perjalanan aktif…'
                 : activeQuery.isError
-                  ? `Active session list unavailable: ${errorText(activeQuery.error)}`
+                  ? 'Gagal memuat daftar perjalanan aktif.'
                   : lastRide
-                    ? `Nothing on the road. Last ride ${dateTimeOf(lastRide.created_at) ?? 'at an unknown time'}, status ${lastRide.status}.`
-                    : 'Nothing on the road, and no ride has been created yet.'}
+                    ? `Tidak ada yang sedang di jalan. Perjalanan terakhir dibuat ${dateTimeOf(lastRide.created_at) ?? 'waktu tidak diketahui'} (status: ${lastRide.status}).`
+                    : 'Belum ada perjalanan yang sedang berjalan atau dibuat.'}
             </p>
           )}
 
@@ -212,50 +176,49 @@ export default function Dashboard() {
               <ActivityBand activity={stats.activity} live={live} />
             ) : (
               <p className="ops-eyebrow text-[10px] text-dispatch-muted">
-                Hourly profile not sent by this backend build
+                Profil aktivitas per jam belum tersedia
               </p>
             )}
           </div>
         </section>
 
-        {/* ---- Buku besar: angka pendukung, baris berhairline, bukan kartu ---- */}
+        {/* Total statistik */}
         <section className="rounded-xl border border-line bg-card p-5">
-          <p className="ops-eyebrow text-[10px] text-muted">Totals</p>
+          <p className="ops-eyebrow text-[10px] text-muted">Ringkasan Total</p>
           <dl className="mt-2 divide-y divide-line">
-            <LedgerRow label="Rides created today" value={stats?.rides_today} />
-            <LedgerRow label="Planned, not started" value={stats?.by_status?.planned} />
-            <LedgerRow label="Completed" value={stats?.by_status?.completed} />
-            <LedgerRow label="Cancelled" value={stats?.by_status?.cancelled} />
-            <LedgerRow label="Rides all time" value={stats?.rides} />
-            <LedgerRow label="Registered users" value={stats?.users} />
+            <LedgerRow label="Dibuat hari ini" value={stats?.rides_today} />
+            <LedgerRow label="Direncanakan (belum mulai)" value={stats?.by_status?.planned} />
+            <LedgerRow label="Selesai" value={stats?.by_status?.completed} />
+            <LedgerRow label="Dibatalkan" value={stats?.by_status?.cancelled} />
+            <LedgerRow label="Total semua perjalanan" value={stats?.rides} />
+            <LedgerRow label="Pengguna terdaftar" value={stats?.users} />
           </dl>
           <p className="mt-3 border-t border-line pt-3 text-[11px] text-muted">
-            Day boundary follows {stats?.time_zone ?? 'the server time zone'}, not the browser.
+            Batas pergantian hari mengikuti zona waktu {stats?.time_zone ?? 'server'}.
           </p>
         </section>
       </div>
 
-      {/* ---- Log ride terakhir ---- */}
+      {/* Log perjalanan terakhir */}
       <section className="overflow-hidden rounded-xl border border-line bg-card">
         <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5">
-          <p className="ops-eyebrow text-[10px] text-muted">Latest rides</p>
+          <p className="ops-eyebrow text-[10px] text-muted">Perjalanan Terakhir</p>
           <p className="ops-figures font-mono text-[11px] text-muted">
-            {recentRows.length} shown
+            {recentRows.length} ditampilkan
           </p>
         </header>
 
         {recentQuery.isError ? (
           <p className="px-5 py-6 text-sm text-muted">
-            Cannot load recent rides: {errorText(recentQuery.error)}
+            Tidak dapat memuat daftar perjalanan terakhir.
           </p>
         ) : recentQuery.isLoading ? (
           <p className="px-5 py-6 text-sm text-muted" role="status">
-            Reading recent rides…
+            Memuat perjalanan terakhir…
           </p>
         ) : recentRows.length === 0 ? (
           <p className="px-5 py-6 text-sm text-muted">
-            No ride has been created yet. Rows appear here as soon as someone opens one from the
-            app.
+            Belum ada perjalanan yang dibuat. Data akan otomatis muncul saat pengguna mulai membuat perjalanan dari aplikasi.
           </p>
         ) : (
           <ul className="divide-y divide-line">
@@ -268,13 +231,13 @@ export default function Dashboard() {
                   {shortId(ride.id)}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm text-ink">
-                  {ride.owner_name?.trim() || 'Owner unknown'}
+                  {ride.owner_name?.trim() || 'Pengendara tidak diketahui'}
                 </span>
                 <StatusChip status={ride.status} />
                 <span className="ops-figures hidden w-16 shrink-0 text-right font-mono text-[12px] text-muted sm:block">
-                  {ride.members_count ?? '—'} rdr
+                  {ride.members_count ?? '—'} org
                 </span>
-                <span className="ops-figures w-24 shrink-0 text-right font-mono text-[12px] text-muted">
+                <span className="ops-figures w-28 shrink-0 text-right font-mono text-[12px] text-muted">
                   {dateTimeOf(ride.created_at) ?? '—'}
                 </span>
               </li>
@@ -319,7 +282,7 @@ function Notice({
             onClick={onRetry}
             className="mt-2 text-[12px] font-medium text-warn-ink underline hover:no-underline"
           >
-            Try again
+            Coba lagi
           </button>
         )}
       </div>
@@ -327,27 +290,17 @@ function Notice({
   );
 }
 
-/** Backend bisa membalas array polos atau objek {rides}. Terima keduanya. */
 function readRides(payload: RidesListResponse | RideRow[] | undefined): RideRow[] {
   if (Array.isArray(payload)) return payload;
   return payload?.rides ?? [];
 }
 
-/**
- * Menjelaskan kapan angka di layar dihitung. `generated_at` datang dari jam
- * server dan itu yang paling jujur; kalau tidak ada, pakai waktu fetch di sisi
- * browser dan sebut apa adanya.
- */
 function describeFetch(stats: StatsOverview | undefined, fetchedAt: number): string {
   const serverClock = clockOf(stats?.generated_at);
-  if (serverClock) return `counted ${serverClock} · reloads every 30s`;
+  if (serverClock) return `Diperbarui pukul ${serverClock} · otomatis tiap 30dtk`;
   if (fetchedAt) {
     const local = clockOf(new Date(fetchedAt).toISOString());
-    return local ? `fetched ${local} (browser clock) · reloads every 30s` : 'reloads every 30s';
+    return local ? `Diperbarui pukul ${local} · otomatis tiap 30dtk` : 'Otomatis tiap 30dtk';
   }
-  return 'not fetched yet';
-}
-
-function errorText(error: unknown): string {
-  return error instanceof Error ? error.message : 'Network error';
+  return 'Belum dimuat';
 }

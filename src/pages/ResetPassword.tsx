@@ -25,7 +25,7 @@ export default function ResetPassword() {
     }
 
     if (password !== confirmPassword) {
-      setError('Password and confirmation do not match.');
+      setError('Konfirmasi password tidak cocok.');
       setLoading(false);
       return;
     }
@@ -34,7 +34,11 @@ export default function ResetPassword() {
       await authAPI.resetPassword(email, otp, password, confirmPassword);
       navigate('/login');
     } catch (err: any) {
-      const message = err?.response?.data?.error || err?.message || 'Failed to reset password. Please try again.';
+      const message =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Gagal mereset password. Silakan coba lagi.';
       setError(message);
     } finally {
       setLoading(false);

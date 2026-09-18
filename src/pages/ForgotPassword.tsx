@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import DispatchIllustration from '../components/DispatchIllustration';
 
@@ -18,7 +18,11 @@ export default function ForgotPassword() {
       await authAPI.forgotPassword(email);
       navigate('/forgot-password/otp', { state: { email } });
     } catch (err: any) {
-      const message = err?.response?.data?.error || err?.message || 'Failed to send OTP. Please try again.';
+      const message =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Gagal mengirim kode OTP. Silakan coba lagi.';
       setError(message);
     } finally {
       setLoading(false);
@@ -112,9 +116,9 @@ export default function ForgotPassword() {
 
           <p className="mt-6 text-center text-sm text-muted">
             Remembered your password?{' '}
-            <a href="/login" className="font-medium text-moss hover:underline">
+            <Link to="/login" className="font-medium text-moss hover:underline">
               Back to login
-            </a>
+            </Link>
           </p>
         </div>
       </main>

@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useSnackbar } from '../components/Snackbar';
 import PasswordInput from '../components/PasswordInput';
 import DispatchIllustration from '../components/DispatchIllustration';
 
@@ -8,12 +10,20 @@ import DispatchIllustration from '../components/DispatchIllustration';
 const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL as string | undefined;
 const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD as string | undefined;
 
+// Berapa lama snackbar tampil sebelum navigate. Cukup panjang buat terbaca,
+// cukup pendek biar gak bikin user nunggu.
+const SUCCESS_DELAY_MS = 1500;
+
 export default function Login() {
   const [email, setEmail] = useState(DEMO_EMAIL ?? '');
   const [password, setPassword] = useState(DEMO_PASSWORD ?? '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // `success` = snackbar tampil, tombol disabled, navigasi tertunda.
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { setLoggedIn } = useAuth();
+  const snackbar = useSnackbar();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +34,26 @@ export default function Login() {
       const res = await authAPI.login(email, password);
       const token = res.data.access_token || res.data.token;
       localStorage.setItem('admin_token', token);
-      navigate('/dashboard');
+      // Backend juga kirim refresh_token (rotation). Simpan — interceptor
+      // pake ini waktu access expired biar user gak ke-logout tiap 15 menit.
+      if (res.data.refresh_token) {
+        localStorage.setItem('admin_refresh_token', res.data.refresh_token);
+      }
+      // Penting: setLoggedIn() SEBELUM navigate. Kalau navigate duluan,
+      // ProtectedRoute masih liat status loggedOut (default) → redirect
+      // balik ke /login. setLoggedIn() update context, baru navigate aman.
+      setLoggedIn();
+      setSuccess(true);
+      snackbar.success('Login berhasil. Mengarahkan ke dashboard…');
+      // Tunda navigasi supaya snackbar sempat terbaca. Tombol tetap
+      // disabled selama `success` true (lihat tombol submit di bawah).
+      window.setTimeout(() => navigate('/dashboard'), SUCCESS_DELAY_MS);
     } catch (err: any) {
-      const message = err?.response?.data?.message || err?.message || 'Login failed. Please check your credentials and try again.';
+      const message =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Email atau password salah. Silakan coba lagi.';
       setError(message);
     } finally {
       setLoading(false);
@@ -129,18 +156,18 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || success}
               className="w-full rounded-lg bg-moss px-4 py-2.5 font-medium text-card transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Signing in...' : success ? 'Success' : 'Sign In'}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
             Forgot your password?{' '}
-            <a href="/forgot-password" className="font-medium text-moss hover:underline">
+            <Link to="/forgot-password" className="font-medium text-moss hover:underline">
               Reset Password
-            </a>
+            </Link>
           </p>
         </div>
       </main>

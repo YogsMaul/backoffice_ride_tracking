@@ -17,8 +17,8 @@ export default function ConfirmModal({
   open,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = 'Konfirmasi',
+  cancelText = 'Batal',
   loading = false,
   onConfirm,
   onCancel,
@@ -88,7 +88,7 @@ export default function ConfirmModal({
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
           >
-            {loading ? 'Logging out...' : confirmText}
+            {loading ? 'Memproses…' : confirmText}
           </button>
         </div>
       </div>

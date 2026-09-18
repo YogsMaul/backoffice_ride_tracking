@@ -2,6 +2,18 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* View Transitions API: matikan default crossfade browser. Circular reveal
+   ditangani sepenuhnya oleh Web Animations API pada ::view-transition-new(root). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  display: none;
+}
+
 /* ===============================================================
    ARAH VISUAL — "papan dispatch"
 
@@ -63,29 +75,33 @@
 .dark {
   color-scheme: dark;
 
-  --t-paper: #08120f;
-  --t-card: #0e1a16;
+  /* Abu-biru netral untuk paper & card — bukan hitam-hijau pekat.
+     Bikin "ruang bernafas" antar panel, dan line jadi kelihatan. */
+  --t-paper: #0f1419;
+  --t-card: #1a212b;
 
+  /* Panel dispatch — hijau-hijau gelap tetap (signature "papan pantau"),
+     sedikit dinaikkan biar layer di atas paper lebih jelas. */
   --t-dispatch: #2a3a34;
   --t-dispatch-row: #1f2c27;
   --t-dispatch-line: #3a4d46;
   --t-dispatch-text: #ecf3ee;
   --t-dispatch-muted: #a3b8ad;
 
-  --t-ink: #e7efe9;
-  --t-muted: #9ab0a4;
-  --t-line: #21332c;
+  --t-ink: #ecf2f0;
+  --t-muted: #8a9ba6;
+  --t-line: #2a3340;
 
-  --t-moss: #5fbf8e;
-  --t-moss-soft: #14291f;
+  --t-moss: #6fd49b;
+  --t-moss-soft: #1a3128;
 
-  --t-amber: #f0b23c;
-  --t-amber-ink: #f4cd7e;
+  --t-amber: #fbbf42;
+  --t-amber-ink: #f8d488;
 
-  --t-warn-ink: #f4cd7e;
-  --t-warn-fill: #221a08;
-  --t-warn-line: #4a3a12;
-  --t-danger-ink: #f4a09a;
+  --t-warn-ink: #f8d488;
+  --t-warn-fill: #2a1f0c;
+  --t-warn-line: #5c4416;
+  --t-danger-ink: #f87171;
 }
 
 /* @theme inline dipakai supaya Tailwind memancarkan
@@ -200,6 +216,21 @@ html {
   }
 }
 
+.snackbar-enter {
+  animation: snackbarEnter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes snackbarEnter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* --- Animasi ilustrasi dispatch di halaman auth.
    Pulse: lingkaran "live" (pin & halo mobil) berkedip pelan.
    Pulse-fast: halo mobil, lebih cepat dari pulse.
@@ -247,6 +278,7 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .page-enter,
+  .snackbar-enter,
   .ops-live,
   .ops-pulse,
   .ops-pulse-fast,

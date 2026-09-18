@@ -1,7 +1,8 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Radio, Users, History, LogOut, X } from 'lucide-react';
 import { useState } from 'react';
 import { authAPI } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 import ConfirmModal from './ConfirmModal';
 
 interface SidebarProps {
@@ -14,6 +15,8 @@ interface SidebarProps {
 export default function Sidebar({ collapsed = false, open = false, onClose }: SidebarProps) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { setLoggedOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -25,20 +28,22 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
       await authAPI.logout();
     } catch {
     } finally {
-      localStorage.removeItem('admin_token');
-      window.location.href = '/login';
+      setLoggedOut();
+      navigate('/login', { replace: true });
     }
   };
 
   const links = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/active-rides', icon: Radio, label: 'Active Rides' },
-    { to: '/users', icon: Users, label: 'Users' },
-    { to: '/ride-history', icon: History, label: 'Ride History' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dasbor' },
+    { to: '/active-rides', icon: Radio, label: 'Perjalanan Aktif' },
+    { to: '/users', icon: Users, label: 'Pengguna' },
+    { to: '/ride-history', icon: History, label: 'Riwayat Perjalanan' },
   ];
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 group ${
+    `flex items-center gap-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 group ${
+      collapsed ? 'justify-center px-0 py-3' : 'px-4 py-3'
+    } ${
       isActive
         ? 'bg-moss-soft text-moss font-medium shadow-sm'
         : 'text-ink hover:bg-paper hover:translate-x-0.5'
@@ -93,14 +98,14 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
                 <span className="block h-0.5 w-5 bg-moss rounded-full" />
               </div>
               <h1 className="text-lg font-bold text-ink">Ride Tracking</h1>
-              <p className="text-xs text-muted">Admin Dashboard</p>
+              <p className="text-xs text-muted">Panel Admin</p>
             </>
           )}
         </div>
 
         {/* Collapse toggle (desktop) moved to TopBar */}
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className={`flex-1 ${collapsed ? 'p-2' : 'p-4'} space-y-1`}>
           {links.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
@@ -115,26 +120,26 @@ export default function Sidebar({ collapsed = false, open = false, onClose }: Si
           ))}
         </nav>
 
-        <div className="p-4 border-t border-line">
+        <div className={`${collapsed ? 'p-2' : 'p-4'} border-t border-line`}>
           <button
             type="button"
             onClick={handleLogout}
-            title={collapsed ? 'Logout' : undefined}
+            title={collapsed ? 'Keluar' : undefined}
             className={`flex items-center gap-3 px-4 py-3 w-full rounded-lg text-ink hover:bg-warn-fill hover:text-warn-ink transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 ${
               collapsed ? 'justify-center px-0' : ''
             }`}
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span>Logout</span>}
+            {!collapsed && <span>Keluar</span>}
           </button>
         </div>
       </aside>
 
       <ConfirmModal
         open={showLogoutModal}
-        title="Konfirmasi Logout"
-        message="Apakah Anda yakin ingin keluar dari dashboard?"
-        confirmText="Logout"
+        title="Konfirmasi Keluar"
+        message="Apakah Anda yakin ingin keluar dari panel admin?"
+        confirmText="Keluar"
         cancelText="Batal"
         loading={loggingOut}
         onConfirm={confirmLogout}

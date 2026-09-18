@@ -1,0 +1,10 @@
+{
+  "name": "Ride Tracking Backoffice",
+  "short_name": "Backoffice",
+  "description": "Administrative dashboard for real-time ride monitoring and management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1326",
+  "theme_color": "#0d1326",
+  "icons": []
+}

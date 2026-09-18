@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { MapPin, Navigation, AlertCircle } from 'lucide-react';
 import { ridesAPI } from '../lib/api';
+
+const RideLiveMap = lazy(() => import('../components/RideLiveMap'));
 
 interface ActiveRideItem {
   id: string;
@@ -33,12 +35,12 @@ export default function ActiveRides() {
     <div className="space-y-5">
       <header className="flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="ops-eyebrow text-[10px] text-moss">Live telemetry</p>
+          <p className="ops-eyebrow text-[10px] text-moss">Telemetri Langsung</p>
           <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-            Active Rides
+            Perjalanan Aktif
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Real-time location and fleet tracking.
+            Pemantauan posisi dan status perjalanan secara real-time.
           </p>
         </div>
         <span
@@ -49,7 +51,7 @@ export default function ActiveRides() {
             className={`h-2 w-2 rounded-full bg-moss ${justUpdated ? 'animate-pulse' : ''}`}
             aria-hidden="true"
           />
-          Live updates
+          Live update
         </span>
       </header>
 
@@ -61,10 +63,10 @@ export default function ActiveRides() {
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warn-ink" aria-hidden="true" />
           <div>
             <p className="text-sm font-medium text-warn-ink">
-              Cannot reach backend at /api/v1/admin/rides
+              Gagal memuat data perjalanan aktif
             </p>
             <p className="mt-1 text-xs text-warn-ink/90">
-              {error instanceof Error ? error.message : 'Network error'}
+              {error instanceof Error ? error.message : 'Gangguan koneksi'}
             </p>
           </div>
         </div>
@@ -73,26 +75,26 @@ export default function ActiveRides() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <section className="rounded-xl border border-line bg-card p-4 lg:col-span-1 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-ink">Ongoing Sessions</h2>
+            <h2 className="font-display text-lg font-semibold text-ink">Sesi Berjalan</h2>
             <span className="ops-eyebrow rounded-full bg-moss-soft px-2.5 py-1 text-[10px] text-moss">
-              {rides.length} active
+              {rides.length} aktif
             </span>
           </div>
 
           {isLoading ? (
             <p className="py-8 text-center text-sm text-muted" role="status">
-              Loading rides…
+              Memuat data perjalanan…
             </p>
           ) : rides.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted">
               <Navigation className="mx-auto mb-2 h-8 w-8 text-muted" aria-hidden="true" />
-              <p className="font-medium text-ink">No active rides right now</p>
+              <p className="font-medium text-ink">Tidak ada perjalanan aktif</p>
               <p className="mt-1 text-xs text-muted">
-                This list updates as soon as a driver starts a ride.
+                Daftar akan terisi otomatis begitu pengendara memulai perjalanan.
               </p>
             </div>
           ) : (
-            <ul className="space-y-2" aria-label="Active rides">
+            <ul className="space-y-2" aria-label="Perjalanan aktif">
               {rides.map((r) => {
                 const isSelected = selectedId === r.id;
                 return (
@@ -109,18 +111,18 @@ export default function ActiveRides() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className="font-medium text-ink">
-                          {r.name || `Ride ${r.id.slice(0, 8)}`}
+                          {r.name || `Perjalanan ${r.id.slice(0, 8)}`}
                         </span>
                         <span className="ops-eyebrow rounded-full bg-dispatch px-2 py-0.5 text-[10px] text-dispatch-text">
-                          {r.members_count ?? 0} riders
+                          {r.members_count ?? 0} pengendara
                         </span>
                       </div>
                       <div className="ops-figures mt-2 flex items-center gap-3 font-mono text-[11px] text-muted">
                         <span className="inline-flex items-center gap-1">
                           <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
-                          {r.status || 'active'}
+                          {r.status === 'active' ? 'berjalan' : r.status || 'aktif'}
                         </span>
-                        {r.started_at && <span>Started {new Date(r.started_at).toLocaleTimeString()}</span>}
+                        {r.started_at && <span>Mulai {new Date(r.started_at).toLocaleTimeString('id-ID')}</span>}
                       </div>
                     </button>
                   </li>
@@ -130,34 +132,22 @@ export default function ActiveRides() {
           )}
         </section>
 
-        <section className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-line bg-card p-6 text-muted lg:col-span-2">
+        <section className="lg:col-span-2">
           {selected ? (
-            <>
-              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-dispatch shadow-lg">
-                <MapPin className="h-8 w-8 text-dispatch-text" aria-hidden="true" />
-              </div>
-              <p className="font-display text-lg font-semibold text-ink">
-                {selected.name || `Ride ${selected.id.slice(0, 8)}`}
-              </p>
-              <p className="mt-1 text-sm text-ink">
-                {selected.members_count ?? 0} riders · {selected.status || 'active'}
-              </p>
-              <p className="mt-4 max-w-xs text-center text-xs text-muted">
-                Map tiles and real-time telemetry will render here. Select a ride to scope the view.
-              </p>
-            </>
+            <Suspense fallback={<div className="flex min-h-[400px] items-center justify-center rounded-xl border border-line bg-card"><div className="animate-spin rounded-full h-8 w-8 border-4 border-accent border-t-transparent"></div></div>}>
+              <RideLiveMap rideId={selected.id} rideName={selected.name} />
+            </Suspense>
           ) : (
-            <>
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-line bg-card p-6 text-muted">
               <MapPin className="mb-2 h-12 w-12 text-muted" aria-hidden="true" />
-              <p className="font-medium text-ink">Live Spatial Map View</p>
+              <p className="font-medium text-ink">Tampilan Peta Interaktif</p>
               <p className="mt-1 max-w-xs text-center text-xs text-muted">
-                Select a ride from the list to scope the map. Wire Leaflet/OpenStreetMap to the
-                <code className="mx-1 rounded bg-paper px-1 ops-figures font-mono text-[11px]">
-                  /api/v1/admin/rides/&lt;id&gt;/telemetry
-                </code>
-                stream.
+                Pilih salah satu perjalanan dari daftar di samping untuk memantau posisi pengendara di peta.
               </p>
-            </>
+              <p className="mt-2 text-[11px] text-muted">
+                Peta muncul setelah ride dipilih — koordinat ditarik tiap 3 detik dari server.
+              </p>
+            </div>
           )}
         </section>
       </div>

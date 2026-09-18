@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import DispatchIllustration from '../components/DispatchIllustration';
 
@@ -62,7 +62,7 @@ export default function VerifyOTP() {
 
     const otpString = otp.join('');
     if (otpString.length !== 6) {
-      setError('Please enter all 6 digits.');
+      setError('Silakan masukkan 6 digit kode OTP.');
       setLoading(false);
       return;
     }
@@ -71,7 +71,11 @@ export default function VerifyOTP() {
       await authAPI.verifyOTP(email, otpString);
       navigate('/forgot-password/reset', { state: { email, otp: otpString } });
     } catch (err: any) {
-      const message = err?.response?.data?.error || err?.message || 'Invalid OTP. Please try again.';
+      const message =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Kode OTP tidak valid atau telah kadaluarsa. Silakan coba lagi.';
       setError(message);
     } finally {
       setLoading(false);
@@ -169,9 +173,9 @@ export default function VerifyOTP() {
 
           <p className="mt-6 text-center text-sm text-muted">
             Didn't receive the code?{' '}
-            <a href="/forgot-password" className="font-medium text-moss hover:underline">
+            <Link to="/forgot-password" className="font-medium text-moss hover:underline">
               Resend code
-            </a>
+            </Link>
           </p>
         </div>
       </main>

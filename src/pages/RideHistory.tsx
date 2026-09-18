@@ -27,18 +27,18 @@ export default function RideHistory() {
   return (
     <div className="space-y-5">
       <header className="flex flex-col gap-2 border-b border-line pb-5">
-        <p className="ops-eyebrow text-[10px] text-moss">Archive</p>
+        <p className="ops-eyebrow text-[10px] text-moss">Arsip</p>
         <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-          Ride History
+          Riwayat Perjalanan
         </h1>
-        <p className="text-sm text-muted">Past rides with replay and analytics.</p>
+        <p className="text-sm text-muted">Daftar perjalanan yang telah selesai atau dibatalkan.</p>
       </header>
 
       <section className="overflow-hidden rounded-xl border border-line bg-card">
         <div className="flex items-center justify-between border-b border-line p-4 sm:p-5">
-          <h2 className="font-display text-lg font-semibold text-ink">Past Rides</h2>
+          <h2 className="font-display text-lg font-semibold text-ink">Semua Arsip</h2>
           <span className="ops-figures font-mono text-xs text-muted">
-            {rides.length} records
+            {rides.length} data
           </span>
         </div>
 
@@ -49,16 +49,16 @@ export default function RideHistory() {
           >
             <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warn-ink" aria-hidden="true" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-warn-ink">Cannot load ride history</p>
+              <p className="text-sm font-medium text-warn-ink">Gagal memuat riwayat perjalanan</p>
               <p className="mt-1 text-xs text-warn-ink/90">
-                {error instanceof Error ? error.message : 'Network error'}
+                {error instanceof Error ? error.message : 'Gangguan koneksi'}
               </p>
               <button
                 type="button"
                 onClick={() => refetch()}
                 className="mt-2 text-xs font-medium text-warn-ink underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-moss rounded"
               >
-                Retry
+                Coba lagi
               </button>
             </div>
           </div>
@@ -66,35 +66,35 @@ export default function RideHistory() {
 
         {!isError && isLoading && (
           <p className="p-8 text-center text-sm text-muted" role="status">
-            Loading past rides…
+            Memuat riwayat perjalanan…
           </p>
         )}
 
         {!isError && !isLoading && rides.length === 0 && (
           <div className="p-8 text-center">
             <Inbox className="mx-auto mb-2 h-10 w-10 text-muted" aria-hidden="true" />
-            <p className="text-sm font-medium text-ink">No past rides yet</p>
+            <p className="text-sm font-medium text-ink">Belum ada riwayat</p>
             <p className="mt-1 text-xs text-muted">
-              Completed rides will appear here once drivers finish them.
+              Perjalanan yang selesai atau dibatalkan akan otomatis muncul di sini.
             </p>
           </div>
         )}
 
         {!isError && !isLoading && rides.length > 0 && (
-          <ul className="divide-y divide-line" aria-label="Past rides">
+          <ul className="divide-y divide-line" aria-label="Riwayat perjalanan">
             {rides.map((ride) => (
               <li key={ride.id} className="p-5 transition-colors hover:bg-moss-soft/40">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="font-display text-base font-semibold text-ink">
-                        {ride.name || `Ride ${ride.id.slice(0, 8)}`}
+                        {ride.name || `Perjalanan ${ride.id.slice(0, 8)}`}
                       </span>
                       <StatusPill status={ride.status} />
                     </div>
                     {ride.owner && (
                       <p className="ops-figures mt-1 font-mono text-[11px] text-muted">
-                        Owner: {ride.owner}
+                        Pembuat: {ride.owner}
                       </p>
                     )}
                   </div>
@@ -103,7 +103,7 @@ export default function RideHistory() {
                     {ride.memberCount != null && (
                       <span className="inline-flex items-center gap-1">
                         <UsersIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                        {ride.memberCount}
+                        {ride.memberCount} peserta
                       </span>
                     )}
                     {ride.distance && (
@@ -139,14 +139,14 @@ function StatusPill({ status }: { status: RideRecord['status'] }) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 text-xs ${
-        completed ? 'text-moss' : 'text-muted'
+        completed ? 'text-moss' : 'text-danger-ink'
       }`}
     >
       <span
-        className={`h-1.5 w-1.5 rounded-full ${completed ? 'bg-moss' : 'bg-muted'}`}
+        className={`h-1.5 w-1.5 rounded-full ${completed ? 'bg-moss' : 'bg-danger-ink'}`}
         aria-hidden="true"
       />
-      {status}
+      {completed ? 'Selesai' : 'Dibatalkan'}
     </span>
   );
 }

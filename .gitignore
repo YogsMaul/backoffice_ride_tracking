@@ -32,3 +32,8 @@ dist-ssr
 # Build / cache
 .cache/
 *.tsbuildinfo
+
+# npm backup (after pnpm migration)
+node_modules.backup
+package-lock.json
+package-lock.json.backup

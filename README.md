@@ -16,13 +16,14 @@ Admin console for the Ride Tracking platform. Operations dashboard, user managem
 ## Prerequisites
 
 - Node.js 20 or newer
+- pnpm 9 or newer (`npm install -g pnpm`)
 - A running instance of the [ride tracking backend](https://github.com/YogsMaul/backend_ride_tracking)
 
 ## Quick start
 
 1. Install dependencies.
    ```bash
-   npm install
+   pnpm install
    ```
 
 2. Copy the example environment file and edit the API URL.
@@ -33,7 +34,7 @@ Admin console for the Ride Tracking platform. Operations dashboard, user managem
 
 3. Run the dev server. The app binds to `0.0.0.0:3000` so it is reachable from other devices on the network (phones, Tailscale peers, LAN clients).
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 4. Open `http://localhost:3000` in a browser.
@@ -86,9 +87,9 @@ backoffice/
 
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Start Vite dev server with HMR. |
-| `npm run build` | Type-check and produce a production build in `dist/`. |
-| `npm run preview` | Serve the production build locally for smoke testing. |
+| `pnpm dev` | Start Vite dev server with HMR. |
+| `pnpm build` | Type-check and produce a production build in `dist/`. |
+| `pnpm preview` | Serve the production build locally for smoke testing. |
 
 ## Authentication
 
